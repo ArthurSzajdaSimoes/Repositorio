@@ -1,0 +1,87 @@
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Tarefas</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 10px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f0f0f0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+li:hover {
+    background-color: #e0e0e0;
+}
+
+.completed {
+    text-decoration: line-through;
+    color: #999;
+    background-color: #d3d3d3;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.fade-out {
+    animation: fadeOut 0.3s ease forwards;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Lista de Tarefas</h1>
+    <input type="text" id="taskInput" placeholder="Adicione uma nova tarefa">
+    <button onclick="addTask()">Adicionar Tarefa</button>
+    <ul id="taskList"></ul>
+</div>
+<script>
+function addTask() {
+    let taskInput = document.getElementById("taskInput");
+    let taskList = document.getElementById("taskList");
+
+    if (taskInput.value !== "") {
+        let li = document.createElement("li");
+        li.textContent = taskInput.value;
+        li.onclick = function() {
+            this.classList.add("fade-out");
+            setTimeout(() => {
+                this.remove();
+            }, 300);
+        };
+        taskList.appendChild(li);
+        taskInput.value = "";
+    } else {
+        alert("Por favor, insira uma tarefa!");
+    }
+}
+</script>
+</body>
+</html>
