@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
@@ -20,67 +21,157 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    margin-bottom: 10px;
-    cursor: pointer;
+input[type="text"] {
+    width: 95%;
     padding: 10px;
-    border-radius: 10px;
-    background-color: #f0f0f0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
-li:hover {
+.task {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    transition: background-color 0.3s ease;
+}
+
+.task:hover {
     background-color: #e0e0e0;
 }
 
-.completed {
-    text-decoration: line-through;
-    color: #999;
-    background-color: #d3d3d3;
+.task.fade-out {
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-@keyframes fadeOut {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
+.edit-mode {
+    display: none;
 }
 
-.fade-out {
-    animation: fadeOut 0.3s ease forwards;
+.edit-mode input[type="text"] {
+    width: calc(100% - 60px);
+    float: left;
+    margin-right: 10px;
+}
+
+.edit-mode button {
+    float: right;
+}
+
+.delete-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 7px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.add-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-button:hover {
+    background-color: #45a049;
+}
+
+.edit-button {
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    padding: 7px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.edit-button:hover {
+    background-color: #0073a8;
 }
 </style>
 </head>
 <body>
 <div class="container">
     <h1>Lista de Tarefas</h1>
-    <input type="text" id="taskInput" placeholder="Adicione uma nova tarefa">
-    <button onclick="addTask()">Adicionar Tarefa</button>
-    <ul id="taskList"></ul>
+    <input type="text" id="taskInput" placeholder="Adicionar uma nova tarefa" onkeydown="if (event.keyCode === 13) addTask()">
+    <button onclick="addTask()" class="add-button">Adicionar Tarefa</button>
+    <div id="taskList"></div>
 </div>
 <script>
 function addTask() {
-    let taskInput = document.getElementById("taskInput");
-    let taskList = document.getElementById("taskList");
-
-    if (taskInput.value !== "") {
-        let li = document.createElement("li");
-        li.textContent = taskInput.value;
-        li.onclick = function() {
-            this.classList.add("fade-out");
-            setTimeout(() => {
-                this.remove();
-            }, 300);
-        };
-        taskList.appendChild(li);
-        taskInput.value = "";
-    } else {
+    let taskInput = document.getElementById("taskInput").value.trim();
+    if (taskInput === "") {
         alert("Por favor, insira uma tarefa!");
+        return;
     }
+    
+    let taskList = document.getElementById("taskList");
+    let newTask = document.createElement("div");
+    newTask.className = "task";
+    
+    let taskText = document.createElement("span");
+    taskText.textContent = taskInput;
+    
+    let editInput = document.createElement("input");
+    editInput.type = "text";
+    editInput.className = "edit-mode";
+    editInput.style.display = "none";
+    
+    let editButton = document.createElement("button");
+    editButton.textContent = "Editar";
+    editButton.className = "edit-button";
+    editButton.onclick = function() {
+        toggleEditMode(newTask);
+    };
+    
+    let deleteButton = document.createElement("button");
+    deleteButton.textContent = "Excluir";
+    deleteButton.className = "delete-button";
+    deleteButton.onclick = function() {
+        deleteTask(newTask);
+    };
+    
+    newTask.appendChild(taskText);
+    newTask.appendChild(editInput);
+    newTask.appendChild(editButton);
+    newTask.appendChild(deleteButton);
+    
+    taskList.appendChild(newTask);
+    
+    document.getElementById("taskInput").value = "";
+}
+
+function toggleEditMode(task) {
+    let taskText = task.querySelector("span");
+    let editInput = task.querySelector("input");
+    
+    taskText.style.display = "none";
+    editInput.style.display = "inline-block";
+    editInput.value = taskText.textContent;
+    
+    editInput.focus();
+    
+    editInput.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            taskText.textContent = editInput.value;
+            taskText.style.display = "inline-block";
+            editInput.style.display = "none";
+        }
+    });
+}
+
+function deleteTask(task) {
+    task.classList.add("fade-out");
+    setTimeout(function() {
+        task.parentNode.removeChild(task);
+    }, 300); // Tempo da transição em milissegundos
 }
 </script>
 </body>
