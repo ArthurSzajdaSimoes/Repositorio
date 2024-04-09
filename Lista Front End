@@ -3,20 +3,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lista de Tarefas</title>
-<style>
-/* Estilos CSS omitidos por brevidade */
-</style>
 </head>
 <body>
 <div class="container">
     <h1>Lista de Tarefas</h1>
-    <input type="text" id="taskInput" placeholder="Adicionar uma nova tarefa" onkeydown="if (event.keyCode === 13) addTask()">
-    <button onclick="addTask()" class="add-button">Adicionar Tarefa</button>
+    <input type="text" id="taskInput" placeholder="Adicionar uma nova tarefa">
+    <button id="addTaskButton" class="add-button">Adicionar Tarefa</button>
     <div id="taskList"></div>
 </div>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     loadTasks();
+    document.getElementById("addTaskButton").addEventListener("click", addTask);
 });
 
 function loadTasks() {
@@ -55,16 +53,16 @@ function addTaskElement(taskText) {
     let editButton = document.createElement("button");
     editButton.textContent = "Editar";
     editButton.className = "edit-button";
-    editButton.onclick = function() {
+    editButton.addEventListener("click", function() {
         toggleEditMode(newTask);
-    };
+    });
     
     let deleteButton = document.createElement("button");
     deleteButton.textContent = "Excluir";
     deleteButton.className = "delete-button";
-    deleteButton.onclick = function() {
+    deleteButton.addEventListener("click", function() {
         deleteTask(newTask);
-    };
+    });
     
     newTask.appendChild(taskTextElement);
     newTask.appendChild(editInput);
@@ -78,21 +76,17 @@ function toggleEditMode(task) {
     let taskTextElement = task.querySelector("span");
     let editInput = task.querySelector("input");
     
-    taskTextElement.style.display = "none";
-    editInput.style.display = "inline-block";
-    editInput.value = taskTextElement.textContent;
-    
-    editInput.focus();
-    
-    editInput.addEventListener("keyup", function(event) {
-        if (event.keyCode === 13) {
-            event.preventDefault();
-            taskTextElement.textContent = editInput.value;
-            taskTextElement.style.display = "inline-block";
-            editInput.style.display = "none";
-            saveTasks();
-        }
-    });
+    if (taskTextElement.style.display === "none") { // Se estiver no modo de edição
+        taskTextElement.textContent = editInput.value;
+        taskTextElement.style.display = "inline-block";
+        editInput.style.display = "none";
+        saveTasks();
+    } else { // Se estiver no modo de visualização
+        taskTextElement.style.display = "none";
+        editInput.style.display = "inline-block";
+        editInput.value = taskTextElement.textContent;
+        editInput.focus();
+    }
 }
 
 function deleteTask(task) {
@@ -100,7 +94,7 @@ function deleteTask(task) {
     setTimeout(function() {
         task.parentNode.removeChild(task);
         saveTasks();
-    }, 150); // Tempo da transição em milissegundos
+    }, 150);
 }
 
 function saveTasks() {
