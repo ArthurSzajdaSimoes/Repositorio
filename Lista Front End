@@ -9,6 +9,7 @@
     <h1>Lista de Tarefas</h1>
     <input type="text" id="taskInput" placeholder="Adicionar uma nova tarefa">
     <button id="addTaskButton" class="add-button">Adicionar Tarefa</button>
+    <button id="restoreTasksButton" class="restore-button">Restaurar Tarefas Ocultas</button>
     <div id="taskList"></div>
 </div>
 <script>
@@ -16,7 +17,17 @@ document.addEventListener("DOMContentLoaded", function() {
     loadTasks();
     document.getElementById("addTaskButton").addEventListener("click", addTask);
 });
+document.getElementById("restoreTasksButton").addEventListener("click", restoreTasks);
 
+function restoreTasks() {
+    document.querySelectorAll(".task").forEach(function(task) {
+        if (task.style.display === "none") {
+            task.style.display = "block";
+        }
+    });
+    saveTasks();
+}
+  
 function loadTasks() {
     let savedTasks = JSON.parse(localStorage.getItem("tasks"));
     if (savedTasks) {
@@ -90,13 +101,9 @@ function toggleEditMode(task) {
 }
 
 function deleteTask(task) {
-    task.classList.add("fade-out");
-    setTimeout(function() {
-        task.parentNode.removeChild(task);
-        saveTasks();
-    }, 150);
-}
-
+    task.style.display = "none";
+    saveTasks();}
+  
 function saveTasks() {
     let tasks = [];
     document.querySelectorAll(".task span").forEach(function(taskTextElement) {
